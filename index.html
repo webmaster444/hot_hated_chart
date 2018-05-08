@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style> /* set the CSS */
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+#chart_container{
+    background: #cd4f64;
+    background: -webkit-gradient(left bottom, right top, color-stop(0%, #cd4f64), color-stop(36%, #e9d972), color-stop(68%, #61f1bc), color-stop(100%, #2eb8d7));
+    background: -webkit-linear-gradient(45deg, #cd4f64 0%, #e9d972 36%, #61f1bc 68%, #2eb8d7 100%);
+    background: linear-gradient(45deg, #cd4f64 0%, #e9d972 36%, #61f1bc 68%, #2eb8d7 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cd4f64', endColorstr='#2eb8d7', GradientType=1 );
+}
+</style>
+<body>
+<div id="chart_container">
+
+</div>
+<!-- load the d3.js library -->     
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+// set the dimensions and margins of the graph
+var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    width = 1700 - margin.left - margin.right,
+    height = 800 - margin.top - margin.bottom;
+
+// set the ranges
+var x = d3.scaleLinear().range([0, width]);
+var y = d3.scaleLinear().range([height, 0]);
+
+// define the line
+var valueline = d3.line()
+    .x(function(d) { return x(d.x); })
+    .y(function(d) { return y(d.y); });
+// define the line
+var valueline2 = d3.line()
+    .x(function(d) { return x(d.x); })
+    .y(function(d) { return y(d.y); });
+  
+// append the svg obgect to the body of the page
+// appends a 'group' element to 'svg'
+// moves the 'group' element to the top left margin
+var svg = d3.select("#chart_container").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+function draw(data) {    
+  // format the data
+  data.forEach(function(d) {
+      d.x = +d.x;
+      d.y = +d.y;
+      d.z = +d.z;
+  });
+  
+  // sort years ascending
+  // data.sort(function(a, b){
+  //   return a["Date"]-b["Date"];
+  // })
+ 
+  // Scale the range of the data
+  x.domain([-30, d3.max(data, function(d) { return d.x; }) + 30]);
+  y.domain([-30, d3.max(data, function(d) { return d.y; }) + 30]);
+  
+  // Add the X Axis
+  svg.append("g")
+      .attr("transform", "translate(0,"+ y(30) + ")")
+      .attr('class','x axis')
+      .call(d3.axisBottom(x));
+
+  // Add the Y Axis
+  svg.append("g")
+      .attr('class','y axis')
+      .attr("transform", "translate("+ x(30) + ",0)")
+      .call(d3.axisLeft(y));
+
+    var g_containers = svg.selectAll(".circle")
+      .data(data).enter()
+      .append('g')
+      .attr('class', 'box');
+
+    g_containers.append('circle')
+      .attr("class", "circle")
+      .attr("cx", function(d){return x(d.x)})
+      .attr("cy", function(d){return y(d.y)})
+      .attr('fill','#005b97')
+      .attr('stroke','#fff')
+      .attr('stroke-width','2px')
+      .attr("r", function(d){return d.z / 5});     
+
+    g_containers.append('text')
+      .attr("x", function(d) {
+          return x(d.x);
+      })
+      .attr("y", function(d){return y(d.y);})
+      .attr("dy", ".35em")
+      .attr('fill','white')
+      .attr('text-anchor','middle')
+      .text(function(d) {
+          return d.ticker;
+      });     
+  // Add the valueline path.
+  // svg.append("path")
+  //     .data([data])
+  //     .attr("class", "line")
+  //     .attr("d", valueline2);  
+}
+// Get the data
+// d3.json("https://dev.decryptz.com/api/v1/charts/hot_hated", function(error, data) {  
+d3.json("data.json", function(error, data) {  
+  if (error) throw error;
+  
+  // trigger render
+  draw(data);
+});
+
+</script>
+</body>
