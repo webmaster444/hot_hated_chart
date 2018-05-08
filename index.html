@@ -59,14 +59,20 @@ body, html{
 <div id="chart_container">
 
 </div>
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
 <!-- load the d3.js library -->     
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
+var con_width = $('#chart_container').width();
+var con_height = $('#chart_container').height();
 // set the dimensions and margins of the graph
 var margin = {top: 20, right: 20, bottom: 30, left: 50},
-    width = 1700 - margin.left - margin.right,
-    height = 800 - margin.top - margin.bottom;
+    width = con_width - margin.left - margin.right,
+    height = con_height - margin.top - margin.bottom;
 
 // set the ranges
 var x = d3.scaleLinear().range([0, width]);
