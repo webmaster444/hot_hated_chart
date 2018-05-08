@@ -29,6 +29,16 @@
 .domain{
   stroke: white;
 }
+.toolTip {
+  position: absolute;
+  display: none;
+  min-width: 80px;
+  height: auto;
+  background: none repeat scroll 0 0 #ffffff;
+  border: 1px solid #6F257F;
+  padding: 14px;
+  text-align: center;
+}
 </style>
 <body>
 <div id="chart_container">
@@ -55,7 +65,9 @@ var valueline = d3.line()
 var valueline2 = d3.line()
     .x(function(d) { return x(d.x); })
     .y(function(d) { return y(d.y); });
-  
+
+var tooltip = d3.select("body").append("div").attr("class", "toolTip");
+
 // append the svg obgect to the body of the page
 // appends a 'group' element to 'svg'
 // moves the 'group' element to the top left margin
@@ -103,10 +115,17 @@ function draw(data) {
       .attr('stroke','#fff')
       .attr('stroke-width','2px')
       .attr("r", function(d){
-        if(d.z /5 > 20)
+        if(d.z /5 > 30)
           return d.z / 5;
-        else return 20;
-      });     
+        else return 30;
+      }).on("mousemove", function(d){
+            tooltip
+              .style("left", d3.event.pageX - 50 + "px")
+              .style("top", d3.event.pageY - 130 + "px")
+              .style("display", "inline-block")
+              .html("X:" + (d.x) + "<br>" + "Y:" + (d.y) + "<br>" + "Z:" +(d.z) + "<br> Ticker: " + (d.ticker) + "<br>  Name:" + (d.name));
+      })
+      .on("mouseout", function(d){ tooltip.style("display", "none");});;     
 
     g_containers.append('text')
       .attr("x", function(d) {
