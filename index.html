@@ -14,7 +14,7 @@
   stroke: steelblue;
   stroke-width: 2px;
 }
-#chart_container{
+.content{
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -23,6 +23,10 @@
     background: -webkit-linear-gradient(45deg, #cd4f64 0%, #e9d972 36%, #61f1bc 68%, #2eb8d7 100%);
     background: linear-gradient(45deg, #cd4f64 0%, #e9d972 36%, #61f1bc 68%, #2eb8d7 100%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cd4f64', endColorstr='#2eb8d7', GradientType=1 );
+}
+#chart_container{
+    width: 100%;
+    height: 80%;
 }
 .tick text{
   text-anchor: end;
@@ -54,10 +58,21 @@ body, html{
   height: 100%;
   margin: 0;
 }
+.axis-label{
+  font-size: 20px;
+  font-weight: 600;
+  font-family: "Quicksand", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+h1{
+  color: white;
+  text-align: center;
+  padding-top: 20px;
+}
 </style>
 <body>
-<div id="chart_container">
-
+  <div class="content">
+    <h1>Top 5 Hot and Hated Stocks </h1>
+    <div id="chart_container"></div>
 </div>
 <script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
@@ -159,6 +174,18 @@ function draw(data) {
       .text(function(d) {
           return d.ticker;
       });     
+
+    svg.append('text')
+      .attr('class','axis-label')
+      .attr("x", 20)
+      .attr("y", 50)
+      .attr("dy", ".35em")
+      .attr('fill','white')
+      .attr('text-anchor','start')
+      .text("24h Sentiment Change")
+
+    svg.selectAll('.axis-label')
+      .call(wrap,100);  
 }
 // Get the data
 // d3.json("https://dev.decryptz.com/api/v1/charts/hot_hated", function(error, data) {  
@@ -169,5 +196,30 @@ d3.json("data.json", function(error, data) {
   draw(data);
 });
 
+function wrap(text, width) {
+  console.log('asdfds');
+  text.each(function() {
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        x = text.attr("x"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
+    while (word = words.pop()) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+      }
+    }
+  });
+}
 </script>
 </body>
