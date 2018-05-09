@@ -130,8 +130,8 @@ function draw(data) {
   });
   
   // Scale the range of the data
-  x.domain([-30, d3.max(data, function(d) { return d.x; }) + 20]);
-  y.domain([-30, d3.max(data, function(d) { return d.y; }) + 20]);
+  x.domain([-30, d3.max(data, function(d) { return d.x; }) + 5]);
+  y.domain([-30, d3.max(data, function(d) { return d.y; }) + 5]);
   
   // Add the X Axis
   svg.append("g")
@@ -231,8 +231,8 @@ function draw(data) {
       .call(wrap,100);  
 }
 // Get the data
-// d3.json("https://dev.decryptz.com/api/v1/charts/hot_hated", function(error, data) {  
-d3.json("data.json", function(error, data) {  
+d3.json("https://dev.decryptz.com/api/v1/charts/hot_hated", function(error, data) {  
+// d3.json("data.json", function(error, data) {  
   if (error) throw error;
   
   // trigger render
