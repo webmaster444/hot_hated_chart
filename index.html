@@ -96,22 +96,6 @@ var margin = {top: 20, right: 20, bottom: 30, left: 50},
     width = con_width - margin.left - margin.right,
     height = con_height - margin.top - margin.bottom;
 
-// set the ranges
-var rc_width =  width - 200;
-var rc_height = height - 200;
-
-var x = d3.scaleLinear().range([0, rc_width]);
-var y = d3.scaleLinear().range([rc_height, 0]);
-
-// define the line
-var valueline = d3.line()
-    .x(function(d) { return x(d.x); })
-    .y(function(d) { return y(d.y); });
-// define the line
-var valueline2 = d3.line()
-    .x(function(d) { return x(d.x); })
-    .y(function(d) { return y(d.y); });
-
 var tooltip = d3.select("body").append("div").attr("class", "toolTip");
 
 // append the svg obgect to the body of the page
@@ -132,61 +116,7 @@ function draw(data) {
       d.z = +d.z;
   });
   
-  // Scale the range of the data
-  x.domain([-30, d3.max(data, function(d) { return d.x; }) + 5]);
-  y.domain([-30, d3.max(data, function(d) { return d.y; }) + 5]);
-  
-  var rw = svg.append('g').attr('transform',"translate(200,0)").attr('class','real_wraper');
-  // Add the X Axis
-  rw.append("g")
-      .attr("transform", "translate(0,"+ y(0) + ")")
-      .attr('class','x axis')
-      .call(d3.axisBottom(x).tickSize(15));
-
-  // Add the Y Axis
-  rw.append("g")
-      .attr('class','y axis')
-      .attr("transform", "translate("+ x(0) + ",0)")
-      .call(d3.axisLeft(y).tickSize(15));
-
-    var g_containers = rw.selectAll(".circle")
-      .data(data).enter()
-      .append('g')
-      .attr('class', 'box');
-
-    g_containers.append('circle')
-      .attr("class", "circle")
-      .attr("cx", function(d){return x(d.x)})
-      .attr("cy", function(d){return y(d.y)})
-      .attr('fill','#373192')
-      .attr('stroke','#fff')
-      .attr('stroke-width','2px')
-      .attr("r", function(d){
-        if(d.z /5 > 30)
-          return d.z / 5;
-        else return 30;
-      }).on("mousemove", function(d){
-        tooltip
-          .style("left", d3.event.pageX - 50 + "px")
-          .style("top", d3.event.pageY - 130 + "px")
-          .style("display", "inline-block")
-          .html("X:" + (d.x) + "<br>" + "Y:" + (d.y) + "<br>" + "Z:" +(d.z) + "<br> Ticker: " + (d.ticker) + "<br>  Name:" + (d.name));
-      })
-      .on("mouseout", function(d){ tooltip.style("display", "none");});;     
-
-    g_containers.append('text')
-      .attr("x", function(d) {
-          return x(d.x);
-      })
-      .attr("y", function(d){return y(d.y);})
-      .attr("dy", ".35em")
-      .attr('fill','white')
-      .attr('text-anchor','middle')
-      .text(function(d) {
-          return d.ticker;
-      });     
-
-    var ex_tx = 100;
+  var ex_tx = 100;
     var ex_ty = 100;
     var ex_width = width - ex_tx;
     var ex_height = height - ex_ty;
@@ -259,6 +189,84 @@ function draw(data) {
     ex_wrapper.append('line').attr('x1',ex_tx + ex_x(0)+ex_x.bandwidth()/2).attr('y1',0).attr('x2',ex_tx + ex_x(0)+ex_x.bandwidth()/2).attr('y2',height).style('stroke','white');
     ex_wrapper.selectAll('.axis-label')
       .call(wrap,100);  
+
+  // set the ranges
+var off_x = ex_tx + ex_x.bandwidth()/2;
+var off_y = ex_ty + ex_y.bandwidth()/2;
+var rc_width =  width - off_x;
+var rc_height = height - off_y;
+
+var x = d3.scaleLinear().range([0, rc_width]);
+var y = d3.scaleLinear().range([rc_height, 0]);
+
+  var xMax = d3.max(data,function(d){return Math.abs(d.x)}) + 5;
+  var yMax = d3.max(data,function(d){return Math.abs(d.y)}) + 5;
+  
+  // Scale the range of the data
+  x.domain([-xMax, xMax]);
+  y.domain([-yMax, yMax]);
+
+// define the line
+var valueline = d3.line()
+    .x(function(d) { return x(d.x); })
+    .y(function(d) { return y(d.y); });
+// define the line
+var valueline2 = d3.line()
+    .x(function(d) { return x(d.x); })
+    .y(function(d) { return y(d.y); });
+
+  
+  var rw = svg.append('g').attr('transform',"translate("+off_x+",0)").attr('class','real_wraper');
+  // Add the X Axis
+  rw.append("g")
+      .attr("transform", "translate(0,"+ y(0) + ")")
+      .attr('class','x axis')
+      .style('opacity',.7)
+      .call(d3.axisBottom(x).tickSize(0).tickFormat(''));
+
+  // Add the Y Axis
+  rw.append("g")
+      .attr('class','y axis')
+      .attr("transform", "translate("+ x(0) + ",0)")
+      .style('opacity',.7)
+      .call(d3.axisLeft(y).tickSize(0).tickFormat(''));
+
+    var g_containers = rw.selectAll(".circle")
+      .data(data).enter()
+      .append('g')
+      .attr('class', 'box');
+
+    g_containers.append('circle')
+      .attr("class", "circle")
+      .attr("cx", function(d){return x(d.x)})
+      .attr("cy", function(d){return y(d.y)})
+      .attr('fill','#373192')
+      .attr('stroke','#fff')
+      .attr('stroke-width','2px')
+      .attr("r", function(d){
+        if(d.z /5 > 30)
+          return d.z / 5;
+        else return 30;
+      }).on("mousemove", function(d){
+        tooltip
+          .style("left", d3.event.pageX - 50 + "px")
+          .style("top", d3.event.pageY - 130 + "px")
+          .style("display", "inline-block")
+          .html("X:" + (d.x) + "<br>" + "Y:" + (d.y) + "<br>" + "Z:" +(d.z) + "<br> Ticker: " + (d.ticker) + "<br>  Name:" + (d.name));
+      })
+      .on("mouseout", function(d){ tooltip.style("display", "none");});;     
+
+    g_containers.append('text')
+      .attr("x", function(d) {
+          return x(d.x);
+      })
+      .attr("y", function(d){return y(d.y);})
+      .attr("dy", ".35em")
+      .attr('fill','white')
+      .attr('text-anchor','middle')
+      .text(function(d) {
+          return d.ticker;
+      });     
 }
 // Get the data
 d3.json("https://dev.decryptz.com/api/v1/charts/hot_hated", function(error, data) {  
