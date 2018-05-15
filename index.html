@@ -181,10 +181,9 @@ function draw(data) {
       .attr("transform", "translate("+ (ex_x(0) + ex_x.bandwidth()/2 + ex_tx) + ",0)")
       .attr('class','y axis')
       .call(d3.axisLeft(ex_y).tickSize(15).tickSizeOuter(0).tickFormat(siFormat));
-    ex_wrapper.append('line').attr('x1',80).attr('y1',ex_y(0)+ex_y.bandwidth()/2).attr('x2',width).attr('y2',ex_y(0)+ex_y.bandwidth()/2).style('stroke','white');
-    ex_wrapper.append('line').attr('x1',ex_tx + ex_x(0)+ex_x.bandwidth()/2).attr('y1',0).attr('x2',ex_tx + ex_x(0)+ex_x.bandwidth()/2).attr('y2',height - 50).style('stroke','white');
-    ex_wrapper.selectAll('.axis-label')
-      .call(wrap,100);  
+      
+    ex_wrapper.append('line').attr('x1',100).attr('y1',ex_y(0)+ex_y.bandwidth()/2).attr('x2',width).attr('y2',ex_y(0)+ex_y.bandwidth()/2).style('stroke','white');
+    ex_wrapper.append('line').attr('x1',ex_tx + ex_x(0)+ex_x.bandwidth()/2).attr('y1',0).attr('x2',ex_tx + ex_x(0)+ex_x.bandwidth()/2).attr('y2',height - 100).style('stroke','white');    
 
   // set the ranges
 var off_x = ex_tx + ex_x.bandwidth()/2;
@@ -270,18 +269,21 @@ var valueline2 = d3.line()
       .attr("y", 0)
       .attr("dy", ".35em")
       .attr('fill','white')
-      .attr("transform",'translate(120,'+(height / 2 + 50)+ ') rotate(270)')
+      .attr("transform",'translate(0,'+(height / 2  - 100)+ ')')
       .attr('text-anchor','start')
       .text("24h Sentiment Change");
 
     ex_wrapper.append('text')
       .attr('class','axis-label')
-      .attr("x", width /2 )
+      .attr("x", width /2 + 50)
       .attr("y", ex_y(0)+100)
       .attr("dy", ".35em")
       .attr('fill','white')
       .attr('text-anchor','start')
       .text("24h Price Change");      
+      
+    ex_wrapper.selectAll('.axis-label')
+          .call(wrap,100);  
 }
 // Get the data
 d3.json("https://dev.decryptz.com/api/v1/charts/hot_hated", function(error, data) {  
