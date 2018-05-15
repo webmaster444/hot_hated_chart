@@ -88,6 +88,10 @@ h1{
 text{
   font-family: 'Source Sans Pro', sans-serif;
 }
+
+.hidden path.domain{
+  display: none;
+}
 </style>
 <body>
   <div class="content">
@@ -212,11 +216,11 @@ var valueline2 = d3.line()
 
     ex_wrapper.append("g")
       .attr("transform", "translate("+(off_x + 10)+ ","+(ex_y(0)+ex_y.bandwidth()/2) + ")")
-      .attr('class','x axis')
+      .attr('class','x axis hidden')
       .call(d3.axisBottom(x).tickSize(15).tickSizeOuter(0).tickFormat(siFormat));
     ex_wrapper.append("g")
       .attr("transform", "translate("+ (ex_x(0) + ex_x.bandwidth()/2 + ex_tx) + ",0)")
-      .attr('class','y axis')
+      .attr('class','y axis hidden')
       .call(d3.axisLeft(y).tickSize(15).tickSizeOuter(0).tickFormat(siFormat));
 
   var rw = svg.append('g').attr('transform',"translate("+(off_x+10)+",0)").attr('class','real_wraper');
