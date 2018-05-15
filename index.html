@@ -173,15 +173,15 @@ function draw(data) {
       .attr('text-anchor','start')
       .text("positive");  
 
-    ex_wrapper.append("g")
-      .attr("transform", "translate("+ex_tx+ ","+(ex_y(0)+ex_y.bandwidth()/2) + ")")
-      .attr('class','x axis')
-      .call(d3.axisBottom(ex_x).tickSize(15).tickSizeOuter(0).tickFormat(siFormat));
-    ex_wrapper.append("g")
-      .attr("transform", "translate("+ (ex_x(0) + ex_x.bandwidth()/2 + ex_tx) + ",0)")
-      .attr('class','y axis')
-      .call(d3.axisLeft(ex_y).tickSize(15).tickSizeOuter(0).tickFormat(siFormat));
-      
+    // ex_wrapper.append("g")
+    //   .attr("transform", "translate("+ex_tx+ ","+(ex_y(0)+ex_y.bandwidth()/2) + ")")
+    //   .attr('class','x axis')
+    //   .call(d3.axisBottom(x).tickSize(15).tickSizeOuter(0).tickFormat(siFormat));
+    // ex_wrapper.append("g")
+    //   .attr("transform", "translate("+ (ex_x(0) + ex_x.bandwidth()/2 + ex_tx) + ",0)")
+    //   .attr('class','y axis')
+    //   .call(d3.axisLeft(y).tickSize(15).tickSizeOuter(0).tickFormat(siFormat));
+
     ex_wrapper.append('line').attr('x1',100).attr('y1',ex_y(0)+ex_y.bandwidth()/2).attr('x2',width).attr('y2',ex_y(0)+ex_y.bandwidth()/2).style('stroke','white');
     ex_wrapper.append('line').attr('x1',ex_tx + ex_x(0)+ex_x.bandwidth()/2).attr('y1',0).attr('x2',ex_tx + ex_x(0)+ex_x.bandwidth()/2).attr('y2',height - 100).style('stroke','white');    
 
@@ -210,7 +210,15 @@ var valueline2 = d3.line()
     .x(function(d) { return x(d.x); })
     .y(function(d) { return y(d.y); });
 
-  
+    ex_wrapper.append("g")
+      .attr("transform", "translate("+(off_x + 10)+ ","+(ex_y(0)+ex_y.bandwidth()/2) + ")")
+      .attr('class','x axis')
+      .call(d3.axisBottom(x).tickSize(15).tickSizeOuter(0).tickFormat(siFormat));
+    ex_wrapper.append("g")
+      .attr("transform", "translate("+ (ex_x(0) + ex_x.bandwidth()/2 + ex_tx) + ",0)")
+      .attr('class','y axis')
+      .call(d3.axisLeft(y).tickSize(15).tickSizeOuter(0).tickFormat(siFormat));
+
   var rw = svg.append('g').attr('transform',"translate("+(off_x+10)+",0)").attr('class','real_wraper');
   // Add the X Axis
   rw.append("g")
