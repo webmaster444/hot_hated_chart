@@ -56,6 +56,7 @@
   border: 1px solid #6F257F;
   padding: 14px;
   text-align: center;
+  font-family: 'Source Sans Pro', sans-serif;
 }
 body, html{
   width: 100%;
@@ -141,9 +142,9 @@ function draw(data) {
     var ex_y = d3.scaleBand().range([ex_height, 0]);
 
     var siFormat = function (d) {
-        if( d !== 0 ) {
+        // if( d !== 0 ) {
             return d;
-        } 
+        // } 
     };
     ex_y.domain([0,10,20,30,40,50,60,70]);
     ex_x.domain([0,10,11,12,13,14,15,16]);
@@ -283,7 +284,7 @@ var valueline2 = d3.line()
       .attr('fill','white')
       .attr("transform",'translate(0,'+(height / 2  - 100)+ ')')
       .attr('text-anchor','start')
-      .text("24h Sentiment Change");
+      .text("24h Sentiment Change %");
 
     ex_wrapper.append('text')
       .attr('class','axis-label')
@@ -292,7 +293,7 @@ var valueline2 = d3.line()
       .attr("dy", ".35em")
       .attr('fill','white')
       .attr('text-anchor','start')
-      .text("24h Price Change");      
+      .text("24h Price Change %");      
       
     ex_wrapper.selectAll('.axis-label')
           .call(wrap,100);  
