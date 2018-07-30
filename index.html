@@ -106,9 +106,25 @@ text{
 <!-- load the d3.js library -->     
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
-$('#chart_container').on('click',function(e){
-  alert('clicked');
+var index=true;
+$('#chart_container').on('click',function(e){  
+  svg.selectAll('.box text').style('opacity','0');  
+  svg.selectAll('.circle').transition().duration(1000).attr('cx',0).attr('r',0);
+  
+  if(index){    
+    chart_data.sort(function(x, y){
+       return d3.ascending(x.z, y.z);
+    })    
+  }else{    
+    chart_data.sort(function(x, y){
+       return d3.descending(x.z, y.z);
+    })    
+  }
+  
+  setTimeout(function() { redrawCircles(chart_data)}, 1000);    
+  index = !index;
 })
+
 var con_width = $('#chart_container').width();
 var con_height = $('#chart_container').height();
 // set the dimensions and margins of the graph
@@ -118,6 +134,7 @@ var margin = {top: 20, right: 20, bottom: 30, left: 50},
 
 var tooltip = d3.select("body").append("div").attr("class", "toolTip");
 
+var chart_data;
 // append the svg obgect to the body of the page
 // appends a 'group' element to 'svg'
 // moves the 'group' element to the top left margin
@@ -128,20 +145,7 @@ var svg = d3.select("#chart_container").append("svg")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
 
-function draw(data) {    
-  // format the data
-  data.forEach(function(d) {
-      d.x = +d.x;
-      d.y = +d.y;
-      d.z = +d.z;
-  });
-  
-  // console.log(data);
-  // data.sort(function(x, y){
-  //    return d3.ascending(x.z, y.z);
-  // })
-  // console.log(data);
-  var ex_tx = 100;
+    var ex_tx = 100;
     var ex_ty = 100;
     var ex_width = width - ex_tx;
     var ex_height = height - ex_ty;
@@ -153,8 +157,29 @@ function draw(data) {
             return d;
         // } 
     };
-    ex_y.domain([0,10,20,30,40,50,60,70]);
+
+        ex_y.domain([0,10,20,30,40,50,60,70]);
     ex_x.domain([0,10,11,12,13,14,15,16]);
+
+var off_x = ex_tx + ex_x.bandwidth()/2;
+var off_y = ex_ty + ex_y.bandwidth()/2;
+var rc_width =  width - off_x;
+var rc_height = height - off_y - 10;
+
+var x = d3.scaleLinear().range([0, rc_width]);
+var y = d3.scaleLinear().range([rc_height, 0]);
+
+function draw(data) {    
+  // format the data
+  data.forEach(function(d) {
+      d.x = +d.x;
+      d.y = +d.y;
+      d.z = +d.z;
+  });
+  
+  chart_data = data;
+  console.log(chart_data);
+
 
     var ex_wrapper = svg.append('g').attr('class',"external_wrapper").attr('transform','translate(0,0)');
 
@@ -189,13 +214,6 @@ function draw(data) {
     ex_wrapper.append('line').attr('x1',ex_tx + ex_x(0)+ex_x.bandwidth()/2).attr('y1',0).attr('x2',ex_tx + ex_x(0)+ex_x.bandwidth()/2).attr('y2',height - 100).style('stroke','white');    
 
   // set the ranges
-var off_x = ex_tx + ex_x.bandwidth()/2;
-var off_y = ex_ty + ex_y.bandwidth()/2;
-var rc_width =  width - off_x;
-var rc_height = height - off_y - 10;
-
-var x = d3.scaleLinear().range([0, rc_width]);
-var y = d3.scaleLinear().range([rc_height, 0]);
 
   var xMax = d3.max(data,function(d){return Math.abs(d.x)}) + 5;
   var yMax = d3.max(data,function(d){return Math.abs(d.y)}) + 5;
@@ -239,7 +257,7 @@ var valueline2 = d3.line()
       .call(d3.axisLeft(y).tickSize(0).tickFormat(''));
 
     var g_containers = rw.selectAll(".circle")
-      .data(data).enter()
+      .data(chart_data).enter()
       .append('g')
       .attr('class', 'box');
 
@@ -251,9 +269,8 @@ var valueline2 = d3.line()
       .attr('stroke','#fff')
       .attr('stroke-width','2px')
       .transition()
-      .duration(function(d,i){
-        return i * 1000;
-      })
+      .delay(function(d,i){return i * 500})
+      .duration(500)
       .attr("r", function(d){
         if(d.z /5 > 30)
           return d.z / 5;
@@ -277,7 +294,8 @@ var valueline2 = d3.line()
       .attr("dy", ".35em")
       .style('opacity',0)
       .transition()
-      .duration(2000)
+      .delay(function(d,i){return i * 500})
+      .duration(500)          
       .style('opacity',1)
       .attr('fill','white')
       .attr('text-anchor','middle')
@@ -317,6 +335,66 @@ d3.json("data.json", function(error, data) {
   draw(data);
 });
 
+function redrawCircles(newdata){  
+  console.log(newdata);
+  var xMax = d3.max(newdata,function(d){return Math.abs(d.x)}) + 5;
+  var yMax = d3.max(newdata,function(d){return Math.abs(d.y)}) + 5;
+  
+  // Scale the range of the data
+  x.domain([-xMax, xMax]);
+  y.domain([-yMax, yMax]);
+
+  var rw = svg.select('.real_wraper');
+
+    var g_containers = rw.selectAll(".circle")
+      .data(newdata).enter();
+
+    svg.selectAll('.circle')
+      .attr('fill','#373192')
+      .attr('stroke','#fff')
+      .attr('stroke-width','2px')
+      .attr("cy", function(d){return y(d.y)})
+      .transition()
+      .delay(function(d,i){ return i * 500 })
+      .duration(500)
+      .attr("cx", function(d){return x(d.x)})      
+      .attr("r", function(d){          
+        if(d.z /5 > 30)
+          return d.z / 5;
+        else return 30;
+      });
+
+      g_containers.selectAll('circle').on("mousemove", function(d){
+        tooltip
+          .style("left", d3.event.pageX - 50 + "px")
+          .style("top", d3.event.pageY - 130 + "px")
+          .style("display", "inline-block")
+          .html("X:" + (d.x) + "<br>" + "Y:" + (d.y) + "<br>" + "Z:" +(d.z) + "<br> Ticker: " + (d.ticker) + "<br>  Name:" + (d.name));
+      })
+      .on("mouseout", function(d){ tooltip.style("display", "none");});;     
+
+      // svg.selectAll('.box text').style('opacity','1'); 
+
+
+    rw.selectAll('.box text').data(newdata).enter();
+
+      svg.selectAll('.box text').attr("x", function(d) {
+          return x(d.x);
+      })
+      .attr("y", function(d){return y(d.y);})
+      .attr("dy", ".35em")
+      .style('opacity',0)
+      .transition()
+      .delay(function(d,i){return (i+1) * 500})
+      .duration(0)      
+      .style('opacity',1)
+      .attr('fill','white')
+      .attr('text-anchor','middle')
+      .text(function(d) {
+        console.log(d.ticker);
+          return d.ticker;
+      });     
+}
 function wrap(text, width) {  
   text.each(function() {
     var text = d3.select(this),
