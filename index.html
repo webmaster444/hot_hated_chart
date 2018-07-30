@@ -109,7 +109,7 @@ text{
 var index=true;
 $('#chart_container').on('click',function(e){  
   svg.selectAll('.box text').style('opacity','0');  
-  svg.selectAll('.circle').transition().ease(d3.easeBack).duration(1000).attr('cx',0).attr('r',0);
+  svg.selectAll('.circle').transition().ease(d3.easeBack).duration(1000).attr('cx',0).style('opacity',0);
   
   if(index){    
     chart_data.sort(function(x, y){
@@ -178,8 +178,6 @@ function draw(data) {
   });
   
   chart_data = data;
-  console.log(chart_data);
-
 
     var ex_wrapper = svg.append('g').attr('class',"external_wrapper").attr('transform','translate(0,0)');
 
@@ -357,6 +355,7 @@ function redrawCircles(newdata){
       .ease(d3.easeBack)
       .delay(function(d,i){ return i * 500 })
       .duration(1000)
+      .style('opacity',1)
       .attr("cx", function(d){return x(d.x)})      
       .attr("r", function(d){          
         if(d.z /5 > 30)
