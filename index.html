@@ -266,9 +266,11 @@ var valueline2 = d3.line()
       .attr('fill','#373192')
       .attr('stroke','#fff')
       .attr('stroke-width','2px')
+      .style('opacity',0)
       .transition()
       .delay(function(d,i){return i * 500})
       .duration(500)
+      .style('opacity',1)
       .attr("r", function(d){
         if(d.z /5 > 30)
           return d.z / 5;
