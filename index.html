@@ -109,7 +109,7 @@ text{
 var index=true;
 $('#chart_container').on('click',function(e){  
   svg.selectAll('.box text').style('opacity','0');  
-  svg.selectAll('.circle').transition().duration(1000).attr('cx',0).attr('r',0);
+  svg.selectAll('.circle').transition().ease(d3.easeBack).duration(1000).attr('cx',0).attr('r',0);
   
   if(index){    
     chart_data.sort(function(x, y){
@@ -335,8 +335,7 @@ d3.json("data.json", function(error, data) {
   draw(data);
 });
 
-function redrawCircles(newdata){  
-  console.log(newdata);
+function redrawCircles(newdata){    
   var xMax = d3.max(newdata,function(d){return Math.abs(d.x)}) + 5;
   var yMax = d3.max(newdata,function(d){return Math.abs(d.y)}) + 5;
   
@@ -355,6 +354,7 @@ function redrawCircles(newdata){
       .attr('stroke-width','2px')
       .attr("cy", function(d){return y(d.y)})
       .transition()
+      .ease(d3.easeBack)
       .delay(function(d,i){ return i * 500 })
       .duration(500)
       .attr("cx", function(d){return x(d.x)})      
@@ -390,8 +390,7 @@ function redrawCircles(newdata){
       .style('opacity',1)
       .attr('fill','white')
       .attr('text-anchor','middle')
-      .text(function(d) {
-        console.log(d.ticker);
+      .text(function(d) {        
           return d.ticker;
       });     
 }
